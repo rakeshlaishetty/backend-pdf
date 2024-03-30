@@ -17,6 +17,20 @@ const Login = async (req, res, next) => {
     next(error);
   }
 };
+const getProfileData = async (req, res, next) => {
+  try {
+    await user.getuserData(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
+const updateProfileData = async (req, res, next) => {
+  try {
+    await user.updateProfileData(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
 
-const USerData = { Registration,Login }
+const USerData = { Registration,Login,getProfileData,updateProfileData }
 module.exports = USerData;

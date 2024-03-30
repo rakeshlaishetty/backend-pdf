@@ -43,6 +43,48 @@ class UserData {
             next(error);
         }
     }
+    async getuserData(req, res, next) {
+        try {
+            const userId = req.user._id
+            const user = await User.findOne({ _id: userId }).populate('role');
+
+            if (!user) {
+                errorResponse(res,404,'User not found');
+                return
+            }
+           
+            return successResponse(res,200,user,"userData fetched successfully");
+        } catch (error) {
+            next(error);
+        }
+    }
+    async updateProfileData(req, res, next) {
+        try {
+            const userId = req.user._id;
+            const { firstName, lastName, nickName, password } = req.body; // Extract allowed fields
+            
+            // Check if at least one of the allowed fields is provided
+            if (!firstName && !lastName && !nickName && !password) {
+                return errorResponse(res, 400, "At least one field (FirstName, lastName, nickName, password) must be provided for update");
+            }
+    
+            const updates = {};
+            if (firstName) updates.FirstName = firstName;
+            if (lastName) updates.lastName = lastName;
+            if (nickName) updates.nickName = nickName;
+            if (password) updates.password = password;
+    
+            const user = await User.findOneAndUpdate({ _id: userId }, updates, { new: true });
+    
+            if (!user) {
+                return errorResponse(res, 404, 'User not found');
+            }
+    
+            return successResponse(res, 200, user, "User data updated successfully");
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 module.exports = UserData;

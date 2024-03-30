@@ -7,7 +7,7 @@ const ROLES = {
     employee: "employee"
 };
 
-module.exports ={ ROLES }
+
 
 const CheckRoleAndInsert = async () => {
     try {
@@ -15,8 +15,8 @@ const CheckRoleAndInsert = async () => {
         for (const role of Object.values(ROLES)) {
             const existingRole = rolesData.find(r => r.roleName === role);
             if (!existingRole) {
-                const newRole = new Roles({roleName:role})
-                await newRole.save()
+                const newRole = new Roles({ roleName: role });
+                await newRole.save();
             }
         }
     } catch (error) {
@@ -24,4 +24,4 @@ const CheckRoleAndInsert = async () => {
     }
 };
 
-module.exports = CheckRoleAndInsert;
+module.exports = { ROLES,CheckRoleAndInsert };

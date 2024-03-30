@@ -21,7 +21,7 @@ const Documentshema = new mongoose.Schema({
         default:Status['Pending'],
         enum: [Status.Pending, Status.StandBy, Status.Processed]
     },
-    Projetc : {
+    Project : {
         type: mongoose.Types.ObjectId,
         required:true,
         ref:'Project'

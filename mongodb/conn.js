@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const CheckRoleAndInsert = require("../utils/roles")
+const {CheckRoleAndInsert} = require("../utils/roles")
 const CheckAdminUser = require("../utils/CheckAdminUser");
 const CheckAnalystUser = require("../utils/checkAnalystUser");
 const CheckEmployee = require("../utils/CheckEmployee");

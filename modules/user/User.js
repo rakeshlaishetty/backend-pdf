@@ -2,12 +2,14 @@ const User = require("../../mongodb/Schemas/UserSchema");
 const { successResponse,errorResponse } = require("../../utils/response");
 const GenerateToken  = require('../../utils/generatejtwToken')
 const bcrypt = require('bcrypt')
+const generateHashedPassword = require('../../utils/generateHashPassword')
 
 class UserData {
     async registerUser(req, res, next) {
         try {
-            const { FirstName, lastName, nickName, email, mobile, role, password } = req.body;
-            
+            let { FirstName, lastName, nickName, email, mobile, role, password } = req.body;
+            console.log(req.body)
+            password = await generateHashedPassword(password) 
             const newUser = new User({
                 FirstName,
                 lastName,
@@ -61,19 +63,19 @@ class UserData {
     async updateProfileData(req, res, next) {
         try {
             const userId = req.user._id;
-            const { firstName, lastName, nickName, password } = req.body; // Extract allowed fields
-            
+            const { FirstName, lastName, nickName, password } = req.body; // Extract allowed fields
+            console.log(password)
             // Check if at least one of the allowed fields is provided
-            if (!firstName && !lastName && !nickName && !password) {
+            if (!FirstName && !lastName && !nickName && !password) {
                 return errorResponse(res, 400, "At least one field (FirstName, lastName, nickName, password) must be provided for update");
             }
     
             const updates = {};
-            if (firstName) updates.FirstName = firstName;
+            if (FirstName) updates.FirstName = FirstName;
             if (lastName) updates.lastName = lastName;
             if (nickName) updates.nickName = nickName;
-            if (password) updates.password = password;
-    
+            if (password) updates.password = await generateHashedPassword(password);
+            console.log(updates,'updates')
             const user = await User.findOneAndUpdate({ _id: userId }, updates, { new: true });
     
             if (!user) {

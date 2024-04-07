@@ -111,7 +111,7 @@ class ProjectAPI {
       const limit = parseInt(req.body.limit) || 10;
 
       const startIndex = (page - 1) * limit;
-      
+
       const documents = await Document.find({ Project: projectId }).populate(
         "Assigned"
       ).skip(startIndex).limit(limit);
@@ -134,7 +134,7 @@ class ProjectAPI {
       successResponse(
         res,
         200,
-        {documents,pagination},
+        { documents, pagination },
         "Documents fetched successfully for the project"
       );
     } catch (error) {
@@ -147,7 +147,7 @@ class ProjectAPI {
       const limit = parseInt(req.body.limit) || 10;
 
       const startIndex = (page - 1) * limit;
-      
+
       const documents = await Document.find().populate(
         "Assigned"
       ).skip(startIndex).limit(limit);
@@ -170,7 +170,7 @@ class ProjectAPI {
       successResponse(
         res,
         200,
-        {documents,pagination},
+        { documents, pagination },
         "Documents fetched successfully for the project"
       );
     } catch (error) {
@@ -203,20 +203,11 @@ class ProjectAPI {
   }
   async createDocument(req, res, next) {
     try {
-   
-     
-      const projectId = req.body.projectId;
-      const documentId = req.body.documentId;
 
-      const document = await Document.findOne({
-        Project: projectId,
-        _id: documentId,
-      }).populate("Assigned");
+      const { documentUrl = null, documentName, projectId, assignedId = null } = req.body
 
-      if (!document) {
-        return errorResponse(res, 404, "Document not found for the project");
-      }
-
+      const document = new Document({ documentUrl, documentName: documentName, Project: projectId, Assigned: assignedId })
+      await document.save()
       successResponse(
         res,
         200,
@@ -255,7 +246,7 @@ class ProjectAPI {
       if (!userData) {
         return errorResponse(res, 404, "user not found for the project");
       }
-      console.log(userData,"user")
+      console.log(userData, "user")
 
       const ClientIds = userData.filter(
         (client) => client.role.roleName == "client"
@@ -278,7 +269,7 @@ class ProjectAPI {
       if (!userData) {
         return errorResponse(res, 404, "user not found for the project");
       }
-      console.log(userData,"user")
+      console.log(userData, "user")
 
       const ClientIds = userData.filter(
         (client) => client.role.roleName == "employee"
@@ -295,6 +286,69 @@ class ProjectAPI {
       next(error);
     }
   }
+  async getAllUsersFilter(req, res, next) {
+    let { userRole, page = 1, limit = 10 } = req.query; // Default page is 1 and limit is 10, unless specified in the request query
+    try {
+
+      page = parseInt(page) || 1;
+      limit = parseInt(limit) || 10;
+
+      const startIndex = (page - 1) * limit;
+      const userData = await User.find().populate("role").select("-password")
+        .skip(startIndex)
+        .limit(limit); // Limit the number of documents returned per page
+  
+      if (!userData || userData.length === 0) {
+        return errorResponse(res, 404, "No users found for the provided criteria.");
+      }
+  
+  
+      const userIds = userData.filter(
+        (client) => client.role.roleName == userRole
+      );
+
+
+      const totalDocuments = await User.countDocuments();
+      const totalPages = Math.ceil(totalDocuments / limit);
+
+      const pagination = {
+        currentPage: page,
+        totalPages: totalPages,
+        pageSize: limit,
+        totalDocuments: totalDocuments,
+      };
+  
+      successResponse(
+        res,
+        200,
+        {pagination,userIds},
+        "Users fetched successfully for the provided criteria."
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getUserData(req, res, next) {
+    let { userId } = req.query; // Default page is 1 and limit is 10, unless specified in the request query
+    try {
+
+      const userData = await User.findById(userId).populate("role").select("-password") 
+      
+      if (!userData) {
+        return errorResponse(res, 404, "No users found for the provided criteria.");
+      }
+  
+      successResponse(
+        res,
+        200,
+        userData,
+        "Users fetched successfully for the provided criteria."
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+  
 }
 
 const ProjectApiController = new ProjectAPI();

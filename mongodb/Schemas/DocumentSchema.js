@@ -28,7 +28,12 @@ const Documentshema = new mongoose.Schema({
     },
     Assigned: {
         type:mongoose.Types.ObjectId,
-        ref:"User"
+        ref:"User",
+        default:null
+    },
+    documentUrl : {
+        type:String,
+        default:null
     }
 });
 

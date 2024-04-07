@@ -21,6 +21,8 @@ router.post('/createdocument',uploadFile,uploadToS3,ProjectApiController.createD
 router.post('/getrequesteduserdetails',ProjectApiController.getuserDetails)
 router.post('/getclients',ProjectApiController.getClients)
 router.post('/getallemployees',ProjectApiController.getAllEmployees)
+router.get("/getallusersfilter",ProjectApiController.getAllUsersFilter)
+router.get("/getuser",ProjectApiController.getUserData)
 
 
 module.exports = router

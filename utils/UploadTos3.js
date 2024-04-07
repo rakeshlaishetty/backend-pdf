@@ -35,7 +35,11 @@ const UploadToS3 = (req, res, next) => {
       console.error("Error uploading file to S3:", err);
       return next(err); // Pass error to the error handler middleware
     }
-    console.log("File uploaded successfully:", data);
+    console.log(data)
+    documentUrl = data.Location.replace('https://pdfdocumentsbucket.s3.ap-south-1.amazonaws.com/', '');
+    console.log(documentUrl, "Document Url")
+    req.body.documentUrl = documentUrl
+
     next(); // Proceed to the next middleware
   });
 };
